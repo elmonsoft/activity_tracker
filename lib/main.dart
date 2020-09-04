@@ -37,10 +37,6 @@ class MyApp extends StatelessWidget {
         return MaterialApp(
           title: 'Actitity Tracker',
           theme: theme,
-          darkTheme: ThemeData(
-            primarySwatch: Colors.blue,
-            fontFamily: 'OpenSans',
-          ),
           home: FutureBuilder(
             future: Future.wait([
               Hive.openBox<Activity>(activityBox),
