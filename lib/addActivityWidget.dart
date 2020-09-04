@@ -123,7 +123,10 @@ class _AddActivityWidgetState extends State<AddActivityWidget> {
     Box<ActivitySetup> setup = Hive.box<ActivitySetup>(activitySetupBox);
     var favoriteActivity =
     setup.values.where((setup) => setup.favorite == true).toList();
-    if(favoriteActivity.length > 0) name = favoriteActivity.first.name;
+    if(favoriteActivity.length > 0) {
+      name = favoriteActivity.first.name;
+      onDBchanged();
+    }
     _controllerActivityName.text= name;
     _controllerActivityName.addListener(() {
       final text = _controllerActivityName.text;
