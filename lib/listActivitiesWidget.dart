@@ -5,6 +5,7 @@ import 'package:hive/hive.dart';
 import 'modell.dart';
 import 'addActivityWidget.dart';
 import 'changeThemeWidget.dart';
+import 'listActivitiesSetupWidget.dart';
 
 class ListActivities extends StatelessWidget {
   @override
@@ -15,7 +16,6 @@ class ListActivities extends StatelessWidget {
     return Scaffold(
         appBar: AppBar(
           title: Text('Activity List'),
-          brightness: Brightness.dark,
           actions: <Widget>[
             IconButton(icon: Icon(Icons.filter_alt_rounded), onPressed: () {}),
             IconButton(icon: Icon(Icons.brightness_6), onPressed: () {
@@ -23,7 +23,11 @@ class ListActivities extends StatelessWidget {
                 MaterialPageRoute(builder: (context) => ChangeThemeWidget()),
               );
             }),
-            IconButton(icon: Icon(Icons.settings), onPressed: () {}),
+            IconButton(icon: Icon(Icons.settings), onPressed: () {
+              Navigator.of(context).push(
+                MaterialPageRoute(builder: (context) => ListActivitiesSetup()),
+              );
+            }),
           ],
         ),
         body: ValueListenableBuilder(
@@ -35,10 +39,12 @@ class ListActivities extends StatelessWidget {
                 child: Text("No activities"),
               );
             }
+            List<Activity> listActivities = box.values.toList();
+            listActivities.sort();
             return ListView.builder(
-              itemCount: box.length,
+              itemCount: listActivities.length,
               itemBuilder: (context, index) {
-                Activity a = box.getAt(index);
+                Activity a =  listActivities[index]; //box.getAt(index);
                 //print('List activity -> $a');
                 Color color = Colors.blue;
                 if (a.icolor != null) color = Color(a.icolor) ;
@@ -76,7 +82,8 @@ class ListActivities extends StatelessWidget {
                     subtitle: Text(a.sdiff),
                     trailing: IconButton(icon: Icon(Icons.delete),
                         //color: brightness.toString()=='Brightness.dark'?Colors.white70:Colors.black87,
-                        onPressed: () => box.deleteAt(index)),
+                        //onPressed: () => box.deleteAt(index)),
+                        onPressed: () => a.delete()),
                   ),
                 );
               },

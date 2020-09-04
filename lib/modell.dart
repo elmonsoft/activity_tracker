@@ -9,7 +9,7 @@ const String activitySetupBox = "activity_setup";
 
 
 @HiveType(typeId: 0)
-class Activity with Comparable<Activity>, Compare<Activity> {
+class Activity extends HiveObject with Comparable<Activity>, Compare<Activity> {
   final formatter = DateFormat("E dd.MM.yyyy HH:mm");
 
   @HiveField(0)
@@ -47,7 +47,7 @@ class Activity with Comparable<Activity>, Compare<Activity> {
     String sdays = days==0?'':'$days days ';
     String shours = (days==0 && hours==0)?'':'$hours hours ';
     String zeit = '$sdays $shours $min minutes';
-    if (days==0 && hours==0 && min==0) return '';
+    if (days==0 && hours==0 && min==0) return sbegin;
     return '$sbegin  --> $zeit';
 
   }
@@ -55,19 +55,21 @@ class Activity with Comparable<Activity>, Compare<Activity> {
 
 
 @HiveType(typeId: 1)
-class ActivitySetup  with Comparable<ActivitySetup>, Compare<ActivitySetup>{
+class ActivitySetup extends HiveObject with Comparable<ActivitySetup>, Compare<ActivitySetup>{
   @HiveField(0)
   String name;
   @HiveField(1)
   int icolor;
   @HiveField(2)
   Map micon; // Icon(IconData(micon['codePoint'], fontFamily: micon['fontFamily']), size: 30,)
+  @HiveField(3)
+  bool favorite;
 
-  ActivitySetup({this.name,  this.icolor, this.micon});
+  ActivitySetup({this.name,  this.icolor, this.micon, this.favorite=false});
 
   @override
   String toString() {
-    return '$name / color: $icolor / icon: $micon';
+    return '$name / favorite: $favorite / color: $icolor / icon: $micon';
   }
 
   @override

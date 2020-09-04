@@ -66,19 +66,22 @@ class ActivitySetupAdapter extends TypeAdapter<ActivitySetup> {
       name: fields[0] as String,
       icolor: fields[1] as int,
       micon: (fields[2] as Map)?.cast<dynamic, dynamic>(),
+      favorite: fields[3] as bool,
     );
   }
 
   @override
   void write(BinaryWriter writer, ActivitySetup obj) {
     writer
-      ..writeByte(3)
+      ..writeByte(4)
       ..writeByte(0)
       ..write(obj.name)
       ..writeByte(1)
       ..write(obj.icolor)
       ..writeByte(2)
-      ..write(obj.micon);
+      ..write(obj.micon)
+      ..writeByte(3)
+      ..write(obj.favorite);
   }
 
   @override

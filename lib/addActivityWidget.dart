@@ -39,14 +39,9 @@ class _AddActivityWidgetState extends State<AddActivityWidget> {
       final micon = json.decode(_valueToValidate);
       //
       var filteredActivity =
-          box.values.where((activity) => activity.name == name);
-      List<Activity> listFilteredActivities = [];
-      filteredActivity.forEach((element) {
-        listFilteredActivities.add(element);
-      });
-      if (listFilteredActivities.isNotEmpty) {
-        last = listFilteredActivities[0].begin;
-      }
+          box.values.where((activity) => activity.name == name).toList();
+      filteredActivity.sort();
+      if(filteredActivity.length>0) last = filteredActivity.first.begin;
 
       // add Activity
       box.add(Activity(
@@ -116,7 +111,6 @@ class _AddActivityWidgetState extends State<AddActivityWidget> {
   void initState() {
     super.initState();
     _controller = TextEditingController(text: 'directions_walk');
-    _controllerActivityName = TextEditingController(text: '');
     // Activity names for DropDownList
     Box<ActivitySetup> setupBox = Hive.box<ActivitySetup>(activitySetupBox);
     for (int i = 0; i < setupBox.length; i++) {
@@ -124,6 +118,21 @@ class _AddActivityWidgetState extends State<AddActivityWidget> {
       //print('$i -> ${setup.toString()}');
       _activityNames.add(setup.name);
     }
+    // init Activity-name TextField
+    _controllerActivityName = TextEditingController();
+    Box<ActivitySetup> setup = Hive.box<ActivitySetup>(activitySetupBox);
+    var favoriteActivity =
+    setup.values.where((setup) => setup.favorite == true).toList();
+    if(favoriteActivity.length > 0) name = favoriteActivity.first.name;
+    _controllerActivityName.text= name;
+    _controllerActivityName.addListener(() {
+      final text = _controllerActivityName.text;
+      _controllerActivityName.value = _controllerActivityName.value.copyWith(
+        text: text,
+        selection: TextSelection(baseOffset: text.length, extentOffset: text.length),
+        composing: TextRange.empty,
+      );
+    });
   }
 
   @override
@@ -161,6 +170,12 @@ class _AddActivityWidgetState extends State<AddActivityWidget> {
                       hintText: '',
                       border: OutlineInputBorder(),
                     ),
+                    validator: (value) {
+                      if (value.isEmpty) {
+                        name = 'Activity';
+                      }
+                      return null;
+                    },
                     onFieldSubmitted: (val) {
                       setState(() {
                         try {
@@ -174,6 +189,7 @@ class _AddActivityWidgetState extends State<AddActivityWidget> {
                       setState(() {
                         try {
                           name = value;
+                          _controllerActivityName.text = name;
                         } catch (e) {
                           print('onChaged TF: ${e.toString()}');
                         }
