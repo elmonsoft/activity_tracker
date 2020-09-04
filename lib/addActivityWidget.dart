@@ -34,7 +34,7 @@ class _AddActivityWidgetState extends State<AddActivityWidget> {
   void onFormSubmit() {
     if (widget.formKey.currentState.validate()) {
       Box<Activity> box = Hive.box<Activity>(activityBox);
-      Box<ActivitySetup> setup = Hive.box<ActivitySetup>(activitySetup);
+      Box<ActivitySetup> setup = Hive.box<ActivitySetup>(activitySetupBox);
       begin = dateTimeField.dtbegin;
       final micon = json.decode(_valueToValidate);
       //
@@ -65,12 +65,12 @@ class _AddActivityWidgetState extends State<AddActivityWidget> {
 
   void onDBchanged() {
     // Wert aus setup uebernehmen
-    Box<ActivitySetup> setupBox = Hive.box<ActivitySetup>(activitySetup);
+    Box<ActivitySetup> setupBox = Hive.box<ActivitySetup>(activitySetupBox);
     var setupActivity =
         setupBox.values.where((activitySetup) => activitySetup.name == name);
-    ActivitySetup firstActSetup = setupActivity.first;
-    _mainColor = Color(firstActSetup.icolor);
-    _controller = TextEditingController(text: firstActSetup.micon['iconName']);
+    ActivitySetup firstActivitySetup = setupActivity.first;
+    _mainColor = Color(firstActivitySetup.icolor);
+    _controller = TextEditingController(text: firstActivitySetup.micon['iconName']);
     setState(() {});
   }
 
@@ -118,7 +118,7 @@ class _AddActivityWidgetState extends State<AddActivityWidget> {
     _controller = TextEditingController(text: 'directions_walk');
     _controllerActivityName = TextEditingController(text: '');
     // Activity names for DropDownList
-    Box<ActivitySetup> setupBox = Hive.box<ActivitySetup>(activitySetup);
+    Box<ActivitySetup> setupBox = Hive.box<ActivitySetup>(activitySetupBox);
     for (int i = 0; i < setupBox.length; i++) {
       ActivitySetup setup = setupBox.getAt(i);
       //print('$i -> ${setup.toString()}');

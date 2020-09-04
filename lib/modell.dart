@@ -5,7 +5,7 @@ import 'package:hive/hive.dart';
 part 'modell.g.dart';
 
 const String activityBox = "activities";
-const String activitySetup = "activity_setup";
+const String activitySetupBox = "activity_setup";
 
 
 @HiveType(typeId: 0)

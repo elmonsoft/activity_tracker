@@ -4,13 +4,17 @@ import 'package:hive_flutter/hive_flutter.dart';
 import 'package:hive/hive.dart';
 import 'modell.dart';
 import 'addActivityWidget.dart';
-import 'changeThemeWidget.dart';
+import 'main.dart';
+
 
 class ListActivities extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     Widget _buildDivider() => const SizedBox(height: 15);
-    final brightness = Theme.of(context).brightness;
+    var customList = Hive.box<Activity>(activityBox);
+    final DateFormat formatter = DateFormat('yyyy-MM-dd');
+    //final String formatted = formatter.format(now);
+
 
     return Scaffold(
         appBar: AppBar(
@@ -18,11 +22,6 @@ class ListActivities extends StatelessWidget {
           brightness: Brightness.dark,
           actions: <Widget>[
             IconButton(icon: Icon(Icons.filter_alt_rounded), onPressed: () {}),
-            IconButton(icon: Icon(Icons.brightness_6), onPressed: () {
-              Navigator.of(context).push(
-                MaterialPageRoute(builder: (context) => ChangeThemeWidget()),
-              );
-            }),
             IconButton(icon: Icon(Icons.settings), onPressed: () {}),
           ],
         ),
@@ -74,9 +73,7 @@ class ListActivities extends StatelessWidget {
                     leading: icon,
                     title: Text(a.name, style: TextStyle(fontSize: 25)),
                     subtitle: Text(a.sdiff),
-                    trailing: IconButton(icon: Icon(Icons.delete),
-                        //color: brightness.toString()=='Brightness.dark'?Colors.white70:Colors.black87,
-                        onPressed: () => box.deleteAt(index)),
+                    trailing: IconButton(icon: Icon(Icons.delete), onPressed: () => box.deleteAt(index)),
                   ),
                 );
               },
