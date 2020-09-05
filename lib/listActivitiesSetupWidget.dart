@@ -44,7 +44,7 @@ void setFavorite(ActivitySetup currentActivitySetup){
               ActivitySetup a = setupActivities[index]; //box.getAt(index);
               Color color = Colors.blue;
               if (a.icolor != null) color = Color(a.icolor) ;
-              Icon icon = Icon(IconData(a.micon['codePoint'], fontFamily: a.micon['fontFamily'])
+              final Icon icon = Icon(IconData(a.micon['codePoint'], fontFamily: a.micon['fontFamily'])
                 , color: color, size: 40,);
               return InkWell(
                 onLongPress: () {
@@ -54,7 +54,7 @@ void setFavorite(ActivitySetup currentActivitySetup){
                     barrierDismissible: true,
                     child: AlertDialog(
                       content: Text(
-                        "Do you want to make ${a.name} favorite ?",
+                        "Do you want to make ${a.name} to favorite ?",
                       ),
                       actions: <Widget>[
                         FlatButton(

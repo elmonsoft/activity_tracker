@@ -65,6 +65,8 @@ class ActivitySetup extends HiveObject with Comparable<ActivitySetup>, Compare<A
   @HiveField(3)
   bool favorite;
 
+  bool _filter=false; // no HiveField
+
   ActivitySetup({this.name,  this.icolor, this.micon, this.favorite=false});
 
   @override
@@ -76,6 +78,8 @@ class ActivitySetup extends HiveObject with Comparable<ActivitySetup>, Compare<A
   int compareTo(ActivitySetup other) =>
       (name).compareTo(other.name);
 
+  bool get filter => _filter;
+  set filter(bool value) => _filter = value;
 }
 
 

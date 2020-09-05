@@ -41,7 +41,7 @@ class _AddActivityWidgetState extends State<AddActivityWidget> {
       var filteredActivity =
           box.values.where((activity) => activity.name == name).toList();
       filteredActivity.sort();
-      if(filteredActivity.length>0) last = filteredActivity.first.begin;
+      if (filteredActivity.length > 0) last = filteredActivity.first.begin;
 
       // add Activity
       box.add(Activity(
@@ -52,7 +52,8 @@ class _AddActivityWidgetState extends State<AddActivityWidget> {
           icolor: _mainColor.value));
       // setup: add Activity
       if (name != null && !_activityNames.contains(name)) {
-        setup.add(ActivitySetup(name: name, micon: micon, icolor: _mainColor.value));
+        setup.add(
+            ActivitySetup(name: name, micon: micon, icolor: _mainColor.value));
       }
       Navigator.of(context).pop();
     }
@@ -65,7 +66,8 @@ class _AddActivityWidgetState extends State<AddActivityWidget> {
         setupBox.values.where((activitySetup) => activitySetup.name == name);
     ActivitySetup firstActivitySetup = setupActivity.first;
     _mainColor = Color(firstActivitySetup.icolor);
-    _controller = TextEditingController(text: firstActivitySetup.micon['iconName']);
+    _controller =
+        TextEditingController(text: firstActivitySetup.micon['iconName']);
     setState(() {});
   }
 
@@ -122,17 +124,18 @@ class _AddActivityWidgetState extends State<AddActivityWidget> {
     _controllerActivityName = TextEditingController();
     Box<ActivitySetup> setup = Hive.box<ActivitySetup>(activitySetupBox);
     var favoriteActivity =
-    setup.values.where((setup) => setup.favorite == true).toList();
-    if(favoriteActivity.length > 0) {
+        setup.values.where((setup) => setup.favorite == true).toList();
+    if (favoriteActivity.length > 0) {
       name = favoriteActivity.first.name;
       onDBchanged();
     }
-    _controllerActivityName.text= name;
+    _controllerActivityName.text = name;
     _controllerActivityName.addListener(() {
       final text = _controllerActivityName.text;
       _controllerActivityName.value = _controllerActivityName.value.copyWith(
         text: text,
-        selection: TextSelection(baseOffset: text.length, extentOffset: text.length),
+        selection:
+            TextSelection(baseOffset: text.length, extentOffset: text.length),
         composing: TextRange.empty,
       );
     });
@@ -151,15 +154,18 @@ class _AddActivityWidgetState extends State<AddActivityWidget> {
       appBar: AppBar(
         title: Text('add Activity'),
       ),
-      body: SafeArea(
+      body: Padding(
+        padding: EdgeInsets.all(5.0),
         child: Form(
           key: widget.formKey,
           child: ListView(
             padding: const EdgeInsets.all(10.0),
             children: <Widget>[
-              const SizedBox(height: 10),
+              const SizedBox(height: 5),
               Row(children: <Widget>[
-                Expanded(
+                Flexible(
+                  flex: 3,
+                  fit: FlexFit.loose,
                   child: TextFormField(
                     keyboardType: TextInputType.text,
                     //autofocus: true,
@@ -201,38 +207,40 @@ class _AddActivityWidgetState extends State<AddActivityWidget> {
                   ),
                 ),
                 Expanded(
+                    flex: 2,
                     child: Column(children: <Widget>[
-                  DropdownButton(
-                    iconSize: 44,
-                    value: _activityname,
-                    isDense: true,
-                    onChanged: (String newValue) {
-                      try {
-                        name = newValue;
-                        _controllerActivityName.text = name;
-                        onDBchanged();
-                      } catch (e) {
-                        print('onChaged DdB: ${e.toString()}');
-                      }
-                    },
-                    items: _activityNames.toList().map((String value) {
-                      return new DropdownMenuItem(
-                        value: value,
-                        child: Text(
-                          value,
-                          style: TextStyle(fontSize: 15),
-                        ),
-                      );
-                    }).toList(),
-                  ),
-                ])),
+                      DropdownButton(
+                        iconSize: 44,
+                        value: _activityname,
+                        isDense: true,
+                        onChanged: (String newValue) {
+                          try {
+                            name = newValue;
+                            _controllerActivityName.text = name;
+                            onDBchanged();
+                          } catch (e) {
+                            print('onChaged DdB: ${e.toString()}');
+                          }
+                        },
+                        items: _activityNames.toList().map((String value) {
+                          return new DropdownMenuItem(
+                            value: value,
+                            child: Text(
+                              value,
+                              style: TextStyle(fontSize: 15),
+                            ),
+                          );
+                        }).toList(),
+                      ),
+                    ])),
               ]),
               _buildDivider(),
               dateTimeField, // ComplexDateTimeField24(now: now, last: last),
               _buildDivider(),
               Row(
                 children: [
-                  Expanded(
+                  Flexible(
+                    flex: 2,
                     child: IconPicker(
                       style: TextStyle(fontSize: 18),
                       cursorColor: _mainColor,
@@ -256,7 +264,8 @@ class _AddActivityWidgetState extends State<AddActivityWidget> {
                   SizedBox(
                     width: 25,
                   ),
-                  Expanded(
+                  Flexible(
+                    flex: 1,
                     child: FlatButton(
                       color: _mainColor,
                       textColor: Colors.white,
@@ -271,12 +280,25 @@ class _AddActivityWidgetState extends State<AddActivityWidget> {
                   ),
                 ],
               ),
-
-              _buildDivider(),
-              _buildDivider(),
-              OutlineButton(
-                child: Text("Submit", style: TextStyle(fontSize: 20.0)),
-                onPressed: onFormSubmit,
+              const SizedBox(height: 50),
+              Center(
+                child: Row(
+                  children: [
+                    FlatButton(
+                      child: Text('Cancel', style: TextStyle(fontSize: 20.0)),
+                      color: Colors.red,
+                      onPressed: Navigator.of(context).pop,
+                    ),
+                    const SizedBox(width: 25),
+                    Expanded(
+                    child: FlatButton(
+                      child: Text('Submit', style: TextStyle(fontSize: 20.0)),
+                      color: Colors.green,
+                      onPressed: onFormSubmit,
+                    ),
+                    ),
+                  ],
+                ),
               ),
             ],
           ),
