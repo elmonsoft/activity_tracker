@@ -29,6 +29,7 @@ class _AddActivityWidgetState extends State<AddActivityWidget> {
   TextEditingController _controller;
   TextEditingController _controllerActivityName;
   Set<String> _activityNames = Set<String>();
+  List<String> _activityNamesSorted = List<String>();
   String _activityname;
 
   void onFormSubmit() {
@@ -119,6 +120,10 @@ class _AddActivityWidgetState extends State<AddActivityWidget> {
       ActivitySetup setup = setupBox.getAt(i);
       //print('$i -> ${setup.toString()}');
       _activityNames.add(setup.name);
+    }
+    if(_activityNames.length>0) {
+      _activityNamesSorted = _activityNames.toList();
+      _activityNamesSorted.sort();
     }
     // init Activity-name TextField
     _controllerActivityName = TextEditingController();
@@ -222,7 +227,7 @@ class _AddActivityWidgetState extends State<AddActivityWidget> {
                             print('onChaged DdB: ${e.toString()}');
                           }
                         },
-                        items: _activityNames.toList().map((String value) {
+                        items: _activityNamesSorted.map((String value) {
                           return new DropdownMenuItem(
                             value: value,
                             child: Text(
