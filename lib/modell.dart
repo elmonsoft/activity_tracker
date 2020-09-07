@@ -38,6 +38,8 @@ class Activity extends HiveObject with Comparable<Activity>, Compare<Activity> {
   String get sbegin => (begin??'')==''?'':formatter.format(begin??'');
   String get slast => (last??'')==''?'':formatter.format(last??'');
   String get sdiff => getDiff();
+  Map get mapIcon => micon;
+  int get intColor => icolor;
 
   String getDiff(){
     int diff = begin.difference(last).inMinutes;

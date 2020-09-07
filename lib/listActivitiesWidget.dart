@@ -34,6 +34,29 @@ class _ListActivitiesState extends State<ListActivities> {
     setState(() {});
   }
 
+  void addActivity(Activity activity) {
+    Box<Activity> box = Hive.box<Activity>(activityBox);
+    Box<ActivitySetup> setup = Hive.box<ActivitySetup>(activitySetupBox);
+    DateTime begin = DateTime.now();
+    DateTime last;
+    //
+    var filteredActivity = box.values
+        .where((aactivity) => aactivity.name == activity.name)
+        .toList();
+    filteredActivity.sort();
+    if (filteredActivity.length > 0) last = filteredActivity.first.begin;
+
+    // add Activity
+    box.add(Activity(
+        name: activity.name,
+        begin: begin,
+        last: last ?? begin,
+        micon: activity.mapIcon,
+        icolor: activity.intColor));
+    // setup: add Activity
+    //Navigator.of(context).pop();
+  }
+
   @override
   void initState() {
     super.initState();
@@ -137,11 +160,12 @@ class _ListActivitiesState extends State<ListActivities> {
                   leading: icon,
                   title: Text(a.name, style: TextStyle(fontSize: 25)),
                   subtitle: Text(a.sdiff),
-
-                  trailing: _filterNames.length > 0 ? IconButton(icon: Icon(Icons.filter_alt)) : IconButton(
-                      icon: Icon(Icons.delete),
-                      //color: brightness.toString()=='Brightness.dark'?Colors.white70:Colors.black87,
-                      onPressed: () => a.delete()),
+                  trailing: _filterNames.length > 0
+                      ? IconButton(icon: Icon(Icons.filter_alt))
+                      : IconButton(
+                          icon: Icon(Icons.content_copy),
+                          //color: brightness.toString()=='Brightness.dark'?Colors.white70:Colors.black87,
+                          onPressed: () => addActivity(a)),
                 ),
               );
             },
