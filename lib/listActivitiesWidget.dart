@@ -14,28 +14,30 @@ class ListActivities extends StatefulWidget {
 }
 
 class _ListActivitiesState extends State<ListActivities> {
-  List<Activity> listActivities = [];
-  Set<String> _activityNames = Set<String>();
-  Set<String> _filterNames = Set<String>();
+  Box<Activity> box;
   Box<ActivitySetup> setupBox;
+  List<Activity> listActivities = [];
+  List<ActivitySetup> _filterActivities = [];
+  Set<String> _filterNames = Set<String>();
 
-  void updateFilterActivities() {
-    setupBox = Hive.box<ActivitySetup>(activitySetupBox);
-    _activityNames = Set<String>();
+
+  void updateFilterActivities(List<ActivitySetup> filter) {
     _filterNames = Set<String>();
-    for (int i = 0; i < setupBox.length; i++) {
-      ActivitySetup setup = setupBox.getAt(i);
-      _activityNames.add(setup.name);
-      if (setup.filter == true) _filterNames.add(setup.name);
+    setState(() {
+      _filterNames = Set<String>();
+    });
+    for (int i = 0; i < filter.length; i++) {
+      if (filter[i].filter == true) _filterNames.add(filter[i].name);
+      setState(() {
+        listActivities = box.values
+            .where((element) => _filterNames.contains(element.name))
+            .toList();
+      });
     }
   }
 
-  void updateState() {
-    setState(() {});
-  }
-
-  void addActivity(Activity activity) async{
-    Box<Activity> box = Hive.box<Activity>(activityBox);
+  void addActivity(Activity activity) async {
+    //Box<Activity> box = Hive.box<Activity>(activityBox);
     Box<ActivitySetup> setup = Hive.box<ActivitySetup>(activitySetupBox);
     DateTime begin = DateTime.now();
     DateTime last;
@@ -60,12 +62,14 @@ class _ListActivitiesState extends State<ListActivities> {
   @override
   void initState() {
     super.initState();
+    box = Hive.box<Activity>(activityBox);
   }
 
   @override
   Widget build(BuildContext context) {
     Widget _buildDivider() => const SizedBox(height: 15);
     final brightness = Theme.of(context).brightness;
+    var myList;
     // Activity names for DropDownList
     return Scaffold(
       appBar: AppBar(
@@ -74,11 +78,16 @@ class _ListActivitiesState extends State<ListActivities> {
           IconButton(
               icon: Icon(Icons.filter_alt_rounded),
               onPressed: () {
-                Navigator.of(context).push(
-                  MaterialPageRoute(
-                      builder: (context) =>
-                          FiterActivitiesWidget(onFilter: () => updateState())),
-                );
+                setState(() {
+                  _filterNames = Set<String>();
+                  listActivities = Hive.box<Activity>(activityBox).values.toList();
+                });
+                 Navigator.of(context).push(MaterialPageRoute(
+                        builder: (context) => FiterActivitiesWidget(
+                            onFilterList: (filterList) {
+                              updateFilterActivities(filterList);
+                            })) //updateState())),
+                    );
                 //setState(() {});
               }),
           IconButton(
@@ -99,7 +108,6 @@ class _ListActivitiesState extends State<ListActivities> {
         ],
       ),
       body: ValueListenableBuilder(
-        //valueListenable: Hive.box<Activity>(activityBox).listenable(),
         valueListenable: Hive.box<Activity>(activityBox).listenable(),
         builder: (context, Box<Activity> box, _) {
           if (box.values.isEmpty) {
@@ -108,7 +116,7 @@ class _ListActivitiesState extends State<ListActivities> {
               child: Text("No activities"),
             );
           }
-          updateFilterActivities();
+          //updateFilterActivities();
           if (_filterNames.length > 0) {
             listActivities = box.values
                 .where((element) => _filterNames.contains(element.name))
@@ -120,8 +128,7 @@ class _ListActivitiesState extends State<ListActivities> {
           return ListView.builder(
             itemCount: listActivities.length,
             itemBuilder: (context, index) {
-              Activity a = listActivities[index]; //box.getAt(index);
-              //print('List activity -> $a');
+              Activity a = listActivities[index];
               Color color = Colors.blue;
               if (a.icolor != null) color = Color(a.icolor);
               final Icon icon = Icon(
@@ -132,7 +139,6 @@ class _ListActivitiesState extends State<ListActivities> {
               );
               return InkWell(
                 onLongPress: () {
-                  print('longPress: $index -> ${a.toString()}');
                   showDialog(
                     context: context,
                     barrierDismissible: true,
@@ -160,13 +166,13 @@ class _ListActivitiesState extends State<ListActivities> {
                   // Show a red background as the item is swiped away.
                   background: Container(color: Colors.redAccent),
                   key: Key(DateTime.now().microsecond.toString()),
-                  onDismissed: (direction) async{
+                  onDismissed: (direction) async {
                     try {
                       await a.delete();
-                    }catch (e){
+                    } catch (e) {
                       print('error Dismiss $a \n${e.toString()}');
                     }
-                      //setState(() {});
+                    //setState(() {});
 /*
                     Scaffold
                         .of(context)
@@ -183,12 +189,11 @@ class _ListActivitiesState extends State<ListActivities> {
                     trailing: _filterNames.length > 0
                         ? IconButton(icon: Icon(Icons.filter_alt))
                         : IconButton(
-                        icon: Icon(Icons.content_copy),
-                        //color: brightness.toString()=='Brightness.dark'?Colors.white70:Colors.black87,
-                        onPressed: () async => await addActivity(a)),
+                            icon: Icon(Icons.content_copy),
+                            //color: brightness.toString()=='Brightness.dark'?Colors.white70:Colors.black87,
+                            onPressed: () async => await addActivity(a)),
                   ),
                 ),
-
               );
             },
           );

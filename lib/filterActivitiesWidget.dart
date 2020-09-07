@@ -6,9 +6,8 @@ import 'package:hive/hive.dart';
 import 'modell.dart';
 
 class FiterActivitiesWidget extends StatefulWidget {
-  const FiterActivitiesWidget({Key key, this.onFilter}) : super(key: key);
-
-  final VoidCallback onFilter;
+  FiterActivitiesWidget({Key key, this.onFilterList}) : super(key: key);
+  final Function(List<ActivitySetup> list) onFilterList;
 
   @override
   _FiterActivitiesWidgetState createState() => _FiterActivitiesWidgetState();
@@ -27,10 +26,20 @@ class _FiterActivitiesWidgetState extends State<FiterActivitiesWidget> {
     Box<Activity> box = Hive.box<Activity>(activityBox);
     Box<ActivitySetup> setupActivityBox =
         Hive.box<ActivitySetup>(activitySetupBox);
+    /*
+    activitySetupList = setupActivityBox.values
+        .where((activitySetup) => activitySetup.filter == true)
+        .toList();
+
+    for (int i = 0; i < activitySetupList.length; i++) {
+      setupActivityBox.getAt(i).filter = false; // reset filter
+    }
+
+     */
+
     for (int i = 0; i < box.length; i++) {
       _activityNames.add(box.getAt(i).name);
     }
-
     for (String name in _activityNames) {
       activitySetupList = setupActivityBox.values
           .where((activitySetup) => activitySetup.name == name);
@@ -40,11 +49,17 @@ class _FiterActivitiesWidgetState extends State<FiterActivitiesWidget> {
         // Aktivität-name nicht mehr in activitySetup, wird also neu erstellt
         activitySetupList =
             box.values.where((activity) => activity.name == name);
-        _filterActivities.add(ActivitySetup(
+        activitySetupTemp = ActivitySetup(
             name: name,
             micon: activitySetupList.first.micon,
-            icolor: activitySetupList.first.icolor));
+            icolor: activitySetupList.first.icolor);
+        activitySetupTemp.filter = false;
+        _filterActivities.add(activitySetupTemp);
       }
+      if (_filterActivities.length > 0) _filterActivities.sort();
+    }
+    for (ActivitySetup reset_filter in _filterActivities) {
+      reset_filter.filter = false;
     }
   }
 
@@ -72,9 +87,12 @@ class _FiterActivitiesWidgetState extends State<FiterActivitiesWidget> {
               icon: Icon(Icons.check_box),
               color: a.filter ?? false ? Colors.greenAccent : Colors.grey,
               onPressed: () {
-                a.filter = !a.filter;
+                //a.filter = !a.filter;
+                _filterActivities[index].filter =
+                    !_filterActivities[index].filter;
                 setState(() {});
-                widget.onFilter();
+                widget.onFilterList(
+                    _filterActivities.where((e) => e.filter == true).toList());
               },
             ),
           );

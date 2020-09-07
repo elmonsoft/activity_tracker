@@ -29,19 +29,19 @@ void setFavorite(ActivitySetup currentActivitySetup){
       ),
       body: ValueListenableBuilder(
         valueListenable: Hive.box<ActivitySetup>(activitySetupBox).listenable(),
-        builder: (context, Box<ActivitySetup> box, _) {
-          if (box.values.isEmpty) {
+        builder: (context, Box<ActivitySetup> activitiesSetupBox, _) {
+          if (activitiesSetupBox.values.isEmpty) {
             print("No activities");
             return Center(
               child: Text("No activities"),
             );
           }
-          List<ActivitySetup> setupActivities = box.values.toList();
-          setupActivities.sort();
+          List<ActivitySetup> activitiesSetupList = activitiesSetupBox.values.toList();
+          activitiesSetupList.sort();
           return ListView.builder(
-            itemCount: setupActivities.length, //box.length,
+            itemCount: activitiesSetupList.length, //box.length,
             itemBuilder: (context, index) {
-              ActivitySetup a = setupActivities[index]; //box.getAt(index);
+              ActivitySetup a = activitiesSetupList[index]; //box.getAt(index);
               Color color = Colors.blue;
               if (a.icolor != null) color = Color(a.icolor) ;
               final Icon icon = Icon(IconData(a.micon['codePoint'], fontFamily: a.micon['fontFamily'])

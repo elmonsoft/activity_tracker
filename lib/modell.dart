@@ -79,7 +79,7 @@ class ActivitySetup extends HiveObject with Comparable<ActivitySetup>, Compare<A
 
   @override
   String toString() {
-    return '$name / favorite: $favorite / color: $icolor / icon: $micon';
+    return '$name / favorite: $favorite / filter: $_filter '; // color: $icolor / icon: $micon';
   }
 
   @override
