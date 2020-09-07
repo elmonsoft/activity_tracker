@@ -44,12 +44,18 @@ class Activity extends HiveObject with Comparable<Activity>, Compare<Activity> {
   String getDiff(){
     int diff = begin.difference(last).inMinutes;
     int min = diff % 60;
-    int hours = (diff/60).toInt()%24;
-    int days = (diff/60/24).toInt();
-    String sdays = days==0?'':'$days days ';
-    String shours = (days==0 && hours==0)?'':'$hours hours ';
-    String zeit = '$sdays $shours $min minutes';
+    int hours = (diff~/60)%24;
+    int days = diff~/60~/24;
+    double ddays = days + hours/24;
+    String sdays = days==0?'':'$days day ';
+    String shours = (days==0 && hours==0)?'':(hours==1)?'$hours hour ':'$hours hours ';
+    String smin = (min==1)?'$min minute':'$min minutes';
+    String zeit = '$sdays $shours $smin ';
     if (days==0 && hours==0 && min==0) return sbegin;
+    if(days==0 && hours>16 || days>1){
+      zeit = '${ddays.toStringAsFixed(2)} days';
+    }
+
     return '$sbegin  --> $zeit';
 
   }

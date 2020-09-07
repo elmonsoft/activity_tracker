@@ -159,16 +159,22 @@ class _ListActivitiesState extends State<ListActivities> {
                 child: Dismissible(
                   // Show a red background as the item is swiped away.
                   background: Container(color: Colors.redAccent),
-                  key: Key(a.toString()),
+                  key: Key(DateTime.now().microsecond.toString()),
                   onDismissed: (direction) async{
+                    try {
                       await a.delete();
+                    }catch (e){
+                      print('error Dismiss $a \n${e.toString()}');
+                    }
                       //setState(() {});
-
+/*
                     Scaffold
                         .of(context)
                         .showSnackBar(SnackBar(
                       backgroundColor: Colors.deepOrange,
                         content: Text("${a.name} dismissed")));
+
+ */
                   },
                   child: ListTile(
                     leading: icon,
