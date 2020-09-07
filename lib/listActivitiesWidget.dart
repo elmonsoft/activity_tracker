@@ -34,7 +34,7 @@ class _ListActivitiesState extends State<ListActivities> {
     setState(() {});
   }
 
-  void addActivity(Activity activity) {
+  void addActivity(Activity activity) async{
     Box<Activity> box = Hive.box<Activity>(activityBox);
     Box<ActivitySetup> setup = Hive.box<ActivitySetup>(activitySetupBox);
     DateTime begin = DateTime.now();
@@ -47,7 +47,7 @@ class _ListActivitiesState extends State<ListActivities> {
     if (filteredActivity.length > 0) last = filteredActivity.first.begin;
 
     // add Activity
-    box.add(Activity(
+    await box.add(Activity(
         name: activity.name,
         begin: begin,
         last: last ?? begin,
@@ -156,17 +156,33 @@ class _ListActivitiesState extends State<ListActivities> {
                     ),
                   );
                 },
-                child: ListTile(
-                  leading: icon,
-                  title: Text(a.name, style: TextStyle(fontSize: 25)),
-                  subtitle: Text(a.sdiff),
-                  trailing: _filterNames.length > 0
-                      ? IconButton(icon: Icon(Icons.filter_alt))
-                      : IconButton(
-                          icon: Icon(Icons.content_copy),
-                          //color: brightness.toString()=='Brightness.dark'?Colors.white70:Colors.black87,
-                          onPressed: () => addActivity(a)),
+                child: Dismissible(
+                  // Show a red background as the item is swiped away.
+                  background: Container(color: Colors.redAccent),
+                  key: Key(a.toString()),
+                  onDismissed: (direction) async{
+                      await a.delete();
+                      //setState(() {});
+
+                    Scaffold
+                        .of(context)
+                        .showSnackBar(SnackBar(
+                      backgroundColor: Colors.deepOrange,
+                        content: Text("${a.name} dismissed")));
+                  },
+                  child: ListTile(
+                    leading: icon,
+                    title: Text(a.name, style: TextStyle(fontSize: 25)),
+                    subtitle: Text(a.sdiff),
+                    trailing: _filterNames.length > 0
+                        ? IconButton(icon: Icon(Icons.filter_alt))
+                        : IconButton(
+                        icon: Icon(Icons.content_copy),
+                        //color: brightness.toString()=='Brightness.dark'?Colors.white70:Colors.black87,
+                        onPressed: () async => await addActivity(a)),
+                  ),
                 ),
+
               );
             },
           );
