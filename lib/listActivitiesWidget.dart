@@ -70,11 +70,12 @@ class _ListActivitiesState extends State<ListActivities> {
   Widget build(BuildContext context) {
     Widget _buildDivider() => const SizedBox(height: 15);
     final brightness = Theme.of(context).brightness;
+    String userName = favoriteUser.name=='default'?'':favoriteUser.name;
     var myList;
     // Activity names for DropDownList
     return Scaffold(
       appBar: AppBar(
-        title: Text('Activity List $favoriteUserName'),
+        title: Text('Activity List $userName'),
         actions: <Widget>[
           IconButton(
               icon: Icon(Icons.filter_alt_rounded),
