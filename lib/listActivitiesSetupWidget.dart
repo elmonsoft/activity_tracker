@@ -22,6 +22,14 @@ void setFavorite(ActivitySetup currentActivitySetup){
   Widget build(BuildContext context) {
     Widget _buildDivider() => const SizedBox(height: 15);
     final brightness = Theme.of(context).brightness;
+    Box<User> userBox = Hive.box<User>(usersBox);
+    List<User> favoriteList = userBox.values.toList().where((u) => u.favorite==true).toList();
+    if(favoriteList.length>0) {
+      User favoriteUser = favoriteList.first;
+      activityBox = favoriteUser.activityBox;
+      activitySetupBox = favoriteUser.activitySetupBox;
+    }
+    // Activ
 
     return Scaffold(
       appBar: AppBar(

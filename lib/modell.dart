@@ -4,10 +4,17 @@ import 'package:hive/hive.dart';
 
 part 'modell.g.dart';
 
-const String activityBox = "activities";
-const String activitySetupBox = "activity_setup";
+User favoriteUser; // global usage
+String activityBox = "activities"; // global usage
+String activitySetupBox = "activity_setup"; // global usage
+const String usersBox = "users";
+const String appSetupBox = "app_setup";
+const String defaultActivityBox = "activities";
+const String defaultActivitySetupBox = "activity_setup";
 
-
+//
+// Activity
+//
 @HiveType(typeId: 0)
 class Activity extends HiveObject with Comparable<Activity>, Compare<Activity> {
   final formatter = DateFormat("E dd.MM.yyyy HH:mm");
@@ -61,7 +68,9 @@ class Activity extends HiveObject with Comparable<Activity>, Compare<Activity> {
   }
 }
 
-
+//
+// ActivitySetup
+//
 @HiveType(typeId: 1)
 class ActivitySetup extends HiveObject with Comparable<ActivitySetup>, Compare<ActivitySetup>{
   @HiveField(0)
@@ -88,6 +97,38 @@ class ActivitySetup extends HiveObject with Comparable<ActivitySetup>, Compare<A
 
   bool get filter => _filter;
   set filter(bool value) => _filter = value;
+}
+
+//
+// User
+//
+@HiveType(typeId: 2)
+class User extends HiveObject with Comparable<User>, Compare<User>{
+  @HiveField(0)
+  String name;
+  @HiveField(1)
+  int icolor;
+  @HiveField(2)
+  Map micon; // Icon(IconData(micon['codePoint'], fontFamily: micon['fontFamily']), size: 30,)
+  @HiveField(3)
+  bool favorite;
+  @HiveField(4)
+  String activityBox;
+  @HiveField(5)
+  String activitySetupBox;
+
+  User({this.name,  this.icolor, this.micon, this.favorite=false,
+        this.activityBox, this.activitySetupBox});
+
+  @override
+  String toString() {
+    return '$name / favorite: $favorite  '; // color: $icolor / icon: $micon';
+  }
+
+  @override
+  int compareTo(User other) =>
+      (name).compareTo(other.name);
+
 }
 
 

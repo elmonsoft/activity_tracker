@@ -1,3 +1,4 @@
+import 'package:activity_tracker/listManageUsersWidget.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:hive_flutter/hive_flutter.dart';
@@ -15,10 +16,10 @@ class ListActivities extends StatefulWidget {
 
 class _ListActivitiesState extends State<ListActivities> {
   Box<Activity> box;
-  Box<ActivitySetup> setupBox;
   List<Activity> listActivities = [];
   List<ActivitySetup> _filterActivities = [];
   Set<String> _filterNames = Set<String>();
+  String favoriteUserName;
 
 
   void updateFilterActivities(List<ActivitySetup> filter) {
@@ -37,8 +38,6 @@ class _ListActivitiesState extends State<ListActivities> {
   }
 
   void addActivity(Activity activity) async {
-    //Box<Activity> box = Hive.box<Activity>(activityBox);
-    Box<ActivitySetup> setup = Hive.box<ActivitySetup>(activitySetupBox);
     DateTime begin = DateTime.now();
     DateTime last;
     //
@@ -62,6 +61,8 @@ class _ListActivitiesState extends State<ListActivities> {
   @override
   void initState() {
     super.initState();
+    activityBox = favoriteUser.activityBox;
+    activitySetupBox = favoriteUser.activitySetupBox;
     box = Hive.box<Activity>(activityBox);
   }
 
@@ -73,7 +74,7 @@ class _ListActivitiesState extends State<ListActivities> {
     // Activity names for DropDownList
     return Scaffold(
       appBar: AppBar(
-        title: Text('Activity List'),
+        title: Text('Activity List $favoriteUserName'),
         actions: <Widget>[
           IconButton(
               icon: Icon(Icons.filter_alt_rounded),
@@ -95,6 +96,13 @@ class _ListActivitiesState extends State<ListActivities> {
               onPressed: () {
                 Navigator.of(context).push(
                   MaterialPageRoute(builder: (context) => ChangeThemeWidget()),
+                );
+              }),
+          IconButton(
+              icon: Icon(Icons.portrait_outlined),
+              onPressed: () {
+                Navigator.of(context).push(
+                  MaterialPageRoute(builder: (context) => ManageUsersWidget()),
                 );
               }),
           IconButton(

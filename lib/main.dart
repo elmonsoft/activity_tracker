@@ -5,19 +5,52 @@ import 'package:hive_flutter/hive_flutter.dart';
 import 'package:hive/hive.dart';
 import 'package:theme_manager/change_theme_widget.dart';
 import 'package:theme_manager/theme_manager.dart';
+import 'dart:convert';
 import 'modell.dart';
 import 'listActivitiesWidget.dart';
-
 
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized(); // Required
   await Hive.initFlutter();
+  Hive.registerAdapter(UserAdapter());
   Hive.registerAdapter(ActivityAdapter());
   Hive.registerAdapter(ActivitySetupAdapter());
+  await Hive.openBox<User>(usersBox);
+  getFavoriteUser();
   await Hive.openBox<Activity>(activityBox);
   await Hive.openBox<ActivitySetup>(activitySetupBox);
   runApp(MyApp());
+}
+
+void getFavoriteUser(){
+  Box<User> userBox = Hive.box<User>(usersBox);
+  //for (var user in userBox.values) user.delete();
+  List<User> favoriteList = userBox.values.toList().where((u) => u.favorite==true).toList();
+  if(favoriteList.length>0) {
+    favoriteUser = favoriteList.first;
+    String favoriteUserName = favoriteUser.name=='default'?'':favoriteUser.name;
+    activityBox = favoriteUser.activityBox;
+    activitySetupBox = favoriteUser.activitySetupBox;
+    return;
+  }
+  // default User, if no favorite exists
+  List<User> defaultList = userBox.values.toList().where((u) => u.name=='default').toList();
+  if(defaultList.length>0){
+    defaultList.first.favorite = true;
+  }
+  else {
+    // create default user
+    String map = '{"iconName": "portrait", "codePoint": 59716, "fontFamily": "MaterialIcons"}';
+    userBox.add(User(
+        name: 'default',
+        micon: json.decode('{"iconName": "portrait", "codePoint": 59716, "fontFamily": "MaterialIcons"}'),
+        icolor: 4278238420,
+        activityBox: defaultActivityBox,
+        activitySetupBox: defaultActivitySetupBox,
+        favorite: true
+    ));
+  }
 }
 
 class MyApp extends StatelessWidget {

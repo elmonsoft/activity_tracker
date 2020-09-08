@@ -8,14 +8,15 @@ import 'package:icon_picker/icon_picker.dart';
 import 'modell.dart';
 import 'dart:convert';
 
-class AddActivityWidget extends StatefulWidget {
+class AddUserWidget extends StatefulWidget {
   final formKey = GlobalKey<FormState>();
 
   @override
-  _AddActivityWidgetState createState() => _AddActivityWidgetState();
+  _AddUserWidgetState createState() => _AddUserWidgetState();
 }
 
-class _AddActivityWidgetState extends State<AddActivityWidget> {
+class _AddUserWidgetState extends State<AddUserWidget> {
+  Box<User> userBox;
   String name;
   DateTime begin;
   DateTime last;
@@ -27,49 +28,29 @@ class _AddActivityWidgetState extends State<AddActivityWidget> {
   String _valueToValidate = '';
   String _valueSaved = '';
   TextEditingController _controller;
-  TextEditingController _controllerActivityName;
-  Set<String> _activityNames = Set<String>();
-  List<String> _activityNamesSorted = List<String>();
-  String _activityname;
+  TextEditingController _controllerUser;
+  List<String> _userNames = [];
+  String _ussername;
 
   void onFormSubmit() {
     if (widget.formKey.currentState.validate()) {
-      Box<Activity> box = Hive.box<Activity>(activityBox);
-      Box<ActivitySetup> setup = Hive.box<ActivitySetup>(activitySetupBox);
-      begin = dateTimeField.dtbegin;
+      Box<User> userBox = Hive.box<User>(usersBox);
       final micon = json.decode(_valueToValidate);
       //
-      var filteredActivity =
-          box.values.where((activity) => activity.name == name).toList();
-      filteredActivity.sort();
-      if (filteredActivity.length > 0) last = filteredActivity.first.begin;
-      // add Activity
-      box.add(Activity(
+      String userName = name??'default';
+      // add User
+      userBox.add(User(
           name: name ?? 'activity-name',
-          begin: begin,
-          last: last ?? begin,
           micon: micon,
-          icolor: _mainColor.value));
-      // setup: add Activity
-      if (name != null && !_activityNames.contains(name)) {
-        setup.add(
-            ActivitySetup(name: name, micon: micon, icolor: _mainColor.value));
-      }
+          icolor: _mainColor.value,
+          activityBox: '${userName}_$defaultActivityBox',
+          activitySetupBox: '${userName}_$defaultActivitySetupBox',
+      ));
+
       Navigator.of(context).pop();
     }
   }
 
-  void onDBchanged() {
-    // Wert aus setup uebernehmen
-    Box<ActivitySetup> setupBox = Hive.box<ActivitySetup>(activitySetupBox);
-    var setupActivity =
-        setupBox.values.where((activitySetup) => activitySetup.name == name);
-    ActivitySetup firstActivitySetup = setupActivity.first;
-    _mainColor = Color(firstActivitySetup.icolor);
-    _controller =
-        TextEditingController(text: firstActivitySetup.micon['iconName']);
-    setState(() {});
-  }
 
   void _openDialog(String title, Widget content) {
     showDialog(
@@ -112,45 +93,21 @@ class _AddActivityWidgetState extends State<AddActivityWidget> {
   @override
   void initState() {
     super.initState();
-    _controller = TextEditingController(text: 'directions_walk');
-    activityBox = favoriteUser.activityBox;
-    activitySetupBox = favoriteUser.activitySetupBox;
+    _controller = TextEditingController(text: 'portrait');
     // Activity names for DropDownList
-    Box<ActivitySetup> setupBox = Hive.box<ActivitySetup>(activitySetupBox);
-    for (int i = 0; i < setupBox.length; i++) {
-      ActivitySetup setup = setupBox.getAt(i);
-      //print('$i -> ${setup.toString()}');
-      _activityNames.add(setup.name);
-    }
-    if (_activityNames.length > 0) {
-      _activityNamesSorted = _activityNames.toList();
-      _activityNamesSorted.sort();
-    }
-    // init Activity-name TextField
-    _controllerActivityName = TextEditingController();
-    Box<ActivitySetup> setup = Hive.box<ActivitySetup>(activitySetupBox);
-    var favoriteActivity =
-        setup.values.where((setup) => setup.favorite == true).toList();
-    if (favoriteActivity.length > 0) {
-      name = favoriteActivity.first.name;
-      onDBchanged();
-    }
-    _controllerActivityName.text = name;
-    _controllerActivityName.addListener(() {
-      final text = _controllerActivityName.text;
-      _controllerActivityName.value = _controllerActivityName.value.copyWith(
-        text: text,
-        selection:
-            TextSelection(baseOffset: text.length, extentOffset: text.length),
-        composing: TextRange.empty,
-      );
-    });
+    userBox = Hive.box<User>(usersBox);
+    _userNames = userBox.values.toList().map((e) => e.name).toList();
+    _userNames.sort();
+    print(_userNames);
+
+    // init User-name TextField
+    _controllerUser = TextEditingController();
   }
 
   @override
   void dispose() {
     _controller.dispose();
-    _controllerActivityName.dispose();
+    _controllerUser.dispose();
     super.dispose();
   }
 
@@ -158,7 +115,7 @@ class _AddActivityWidgetState extends State<AddActivityWidget> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('add Activity'),
+        title: Text('add User'),
       ),
       body: Padding(
         padding: EdgeInsets.all(5.0),
@@ -176,19 +133,20 @@ class _AddActivityWidgetState extends State<AddActivityWidget> {
                     keyboardType: TextInputType.text,
                     //autofocus: true,
                     //initialValue: '',
-                    controller: _controllerActivityName,
+                    controller: _controllerUser,
                     autocorrect: false,
                     autovalidate: false,
                     style: TextStyle(fontSize: 25),
                     decoration: InputDecoration(
-                      labelText: 'Activity',
+                      labelText: 'User',
                       hintText: '',
                       border: OutlineInputBorder(),
                     ),
                     validator: (value) {
                       if (value.isEmpty) {
-                        name = 'Activity';
+                        return 'empty User';
                       }
+                      if(_userNames.contains(value)) return 'User exists!';
                       return null;
                     },
                     onFieldSubmitted: (val) {
@@ -204,7 +162,7 @@ class _AddActivityWidgetState extends State<AddActivityWidget> {
                       setState(() {
                         try {
                           name = value;
-                          _controllerActivityName.text = name;
+                          //_controllerUser.text = name;
                         } catch (e) {
                           print('onChaged TF: ${e.toString()}');
                         }
@@ -212,36 +170,7 @@ class _AddActivityWidgetState extends State<AddActivityWidget> {
                     },
                   ),
                 ),
-                Expanded(
-                    flex: 2,
-                    child: Column(children: <Widget>[
-                      DropdownButton(
-                        iconSize: 44,
-                        value: _activityname,
-                        isDense: true,
-                        onChanged: (String newValue) {
-                          try {
-                            name = newValue;
-                            _controllerActivityName.text = name;
-                            onDBchanged();
-                          } catch (e) {
-                            print('onChaged DdB: ${e.toString()}');
-                          }
-                        },
-                        items: _activityNamesSorted.map((String value) {
-                          return new DropdownMenuItem(
-                            value: value,
-                            child: Text(
-                              value,
-                              style: TextStyle(fontSize: 15),
-                            ),
-                          );
-                        }).toList(),
-                      ),
-                    ])),
               ]),
-              _buildDivider(),
-              dateTimeField, // ComplexDateTimeField24(now: now, last: last),
               _buildDivider(),
               Row(
                 children: [
@@ -297,11 +226,11 @@ class _AddActivityWidgetState extends State<AddActivityWidget> {
                     ),
                     const SizedBox(width: 25),
                     Expanded(
-                      child: FlatButton(
-                        child: Text('Submit', style: TextStyle(fontSize: 20.0)),
-                        color: Colors.green,
-                        onPressed: onFormSubmit,
-                      ),
+                    child: FlatButton(
+                      child: Text('Submit', style: TextStyle(fontSize: 20.0)),
+                      color: Colors.green,
+                      onPressed: onFormSubmit,
+                    ),
                     ),
                   ],
                 ),
