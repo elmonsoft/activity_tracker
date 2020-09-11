@@ -65,7 +65,7 @@ class Activity extends HiveObject with Comparable<Activity>, Compare<Activity> {
       zeit = '${ddays.toStringAsFixed(2)} days';
     }
 
-    return '$sbegin  --> $zeit';
+    return '$sbegin\n$zeit';
 
   }
 }

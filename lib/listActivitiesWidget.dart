@@ -208,7 +208,7 @@ class _ListActivitiesState extends State<ListActivities> {
                     trailing: _filterNames.length > 0
                         ? IconButton(icon: Icon(Icons.filter_alt))
                         : IconButton(
-                            icon: Icon(Icons.content_copy),
+                            icon: Icon(Icons.content_copy, size: 25,),
                             //color: brightness.toString()=='Brightness.dark'?Colors.white70:Colors.black87,
                             onPressed: () async => await addActivity(a)),
                   ),
