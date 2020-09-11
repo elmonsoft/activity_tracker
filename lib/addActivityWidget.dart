@@ -39,6 +39,7 @@ class _AddActivityWidgetState extends State<AddActivityWidget> {
       begin = dateTimeField.dtbegin;
       final micon = json.decode(_valueToValidate);
       //
+      print(_valueToValidate);
       var filteredActivity =
           box.values.where((activity) => activity.name == name).toList();
       filteredActivity.sort();

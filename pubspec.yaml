@@ -33,6 +33,7 @@ dependencies:
   datetime_picker_formfield: ^1.0.0
   flutter_material_color_picker: ^1.0.5
   icon_picker: ^1.1.0
+  material_design_icons_flutter: ^4.0.5555
   theme_manager: ^1.0.4
 
 dev_dependencies:

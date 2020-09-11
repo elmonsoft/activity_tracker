@@ -1,3 +1,4 @@
+import 'package:activity_tracker/listManageUserIconsWidget.dart';
 import 'package:activity_tracker/listManageUsersWidget.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -8,6 +9,7 @@ import 'addActivityWidget.dart';
 import 'changeThemeWidget.dart';
 import 'listActivitiesSetupWidget.dart';
 import 'filterActivitiesWidget.dart';
+import 'listManageUsersWidget.dart';
 
 class ListActivities extends StatefulWidget {
   @override
@@ -104,6 +106,14 @@ class _ListActivitiesState extends State<ListActivities> {
               onPressed: () {
                 Navigator.of(context).push(
                   MaterialPageRoute(builder: (context) => ManageUsersWidget()),
+                );
+              }),
+          IconButton(
+              icon: Icon(Icons.work),
+              onPressed: () {
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                      builder: (context) => ManageUserIconsWidget()),
                 );
               }),
           IconButton(

@@ -11,6 +11,8 @@ const String usersBox = "users";
 const String appSetupBox = "app_setup";
 const String defaultActivityBox = "activities";
 const String defaultActivitySetupBox = "activity_setup";
+const String iconsBox = "user_icons";
+const String iconsCollectionBox = "user_icons_collection";
 
 //
 // Activity
@@ -131,6 +133,33 @@ class User extends HiveObject with Comparable<User>, Compare<User>{
 
 }
 
+
+//
+// Icon
+//
+@HiveType(typeId: 3)
+class UserIcon  extends HiveObject with Comparable<UserIcon>, Compare<UserIcon> {
+  @HiveField(0)
+  String name;
+  @HiveField(1)
+  int codePoint;
+  @HiveField(2)
+  String fontFamily;
+  @HiveField(3)
+  Map micon; // Icon(IconData(micon['codePoint'], fontFamily: micon['fontFamily']), size: 30,)
+
+  UserIcon({this.name,  this.codePoint, this.fontFamily, this.micon});
+
+  @override
+  String toString() {
+    return '$name  ';
+  }
+
+  @override
+  int compareTo(UserIcon other) =>
+      (name).compareTo(other.name);
+
+}
 
 mixin Compare<T> on Comparable<T> {
   bool operator <=(T other) => this.compareTo(other) <= 0;

@@ -16,10 +16,12 @@ void main() async {
   Hive.registerAdapter(UserAdapter());
   Hive.registerAdapter(ActivityAdapter());
   Hive.registerAdapter(ActivitySetupAdapter());
+  Hive.registerAdapter(UserIconAdapter());
   await Hive.openBox<User>(usersBox);
   getFavoriteUser();
   await Hive.openBox<Activity>(activityBox);
   await Hive.openBox<ActivitySetup>(activitySetupBox);
+  await Hive.openBox<UserIcon>(iconsBox);
   runApp(MyApp());
 }
 

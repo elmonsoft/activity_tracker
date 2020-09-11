@@ -30,7 +30,7 @@ class _AddUserWidgetState extends State<AddUserWidget> {
   TextEditingController _controller;
   TextEditingController _controllerUser;
   List<String> _userNames = [];
-  String _ussername;
+  String _username;
 
   void onFormSubmit() {
     if (widget.formKey.currentState.validate()) {

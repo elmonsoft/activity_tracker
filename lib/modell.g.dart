@@ -143,3 +143,46 @@ class UserAdapter extends TypeAdapter<User> {
           runtimeType == other.runtimeType &&
           typeId == other.typeId;
 }
+
+class UserIconAdapter extends TypeAdapter<UserIcon> {
+  @override
+  final int typeId = 3;
+
+  @override
+  UserIcon read(BinaryReader reader) {
+    final numOfFields = reader.readByte();
+    final fields = <int, dynamic>{
+      for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
+    };
+    return UserIcon(
+      name: fields[0] as String,
+      codePoint: fields[1] as int,
+      fontFamily: fields[2] as String,
+      micon: (fields[3] as Map)?.cast<dynamic, dynamic>(),
+    );
+  }
+
+  @override
+  void write(BinaryWriter writer, UserIcon obj) {
+    writer
+      ..writeByte(4)
+      ..writeByte(0)
+      ..write(obj.name)
+      ..writeByte(1)
+      ..write(obj.codePoint)
+      ..writeByte(2)
+      ..write(obj.fontFamily)
+      ..writeByte(3)
+      ..write(obj.micon);
+  }
+
+  @override
+  int get hashCode => typeId.hashCode;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is UserIconAdapter &&
+          runtimeType == other.runtimeType &&
+          typeId == other.typeId;
+}
